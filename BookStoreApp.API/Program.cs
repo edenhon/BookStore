@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Text;
 
+var corsPolicyName = "BookStoreCors";
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -32,7 +33,7 @@ builder.Host.UseSerilog((ctx, lc) =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
+    options.AddPolicy(corsPolicyName,
         b => b.AllowAnyMethod()
         .AllowAnyHeader()
         .AllowAnyOrigin());
@@ -68,7 +69,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseCors();
+app.UseCors(corsPolicyName);
 
 app.UseAuthentication();
 app.UseAuthorization();

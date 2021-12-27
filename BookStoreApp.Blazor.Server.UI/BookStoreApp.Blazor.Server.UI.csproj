@@ -1,10 +1,33 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Configurations\**" />
+    <Compile Remove="Model\**" />
+    <Compile Remove="Providers\**" />
+    <Compile Remove="Services\**" />
+    <Compile Remove="Statics\**" />
+    <Content Remove="Configurations\**" />
+    <Content Remove="Model\**" />
+    <Content Remove="Providers\**" />
+    <Content Remove="Services\**" />
+    <Content Remove="Statics\**" />
+    <EmbeddedResource Remove="Configurations\**" />
+    <EmbeddedResource Remove="Model\**" />
+    <EmbeddedResource Remove="Providers\**" />
+    <EmbeddedResource Remove="Services\**" />
+    <EmbeddedResource Remove="Statics\**" />
+    <None Remove="Configurations\**" />
+    <None Remove="Model\**" />
+    <None Remove="Providers\**" />
+    <None Remove="Services\**" />
+    <None Remove="Statics\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="4.1.5" />
@@ -14,7 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\" />
+    <ProjectReference Include="..\BookStoreApp.Blazor.Shared.UI\BookStoreApp.Blazor.Shared.UI.csproj" />
   </ItemGroup>
 
 </Project>

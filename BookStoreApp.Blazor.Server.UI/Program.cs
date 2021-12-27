@@ -1,9 +1,9 @@
 using Blazored.LocalStorage;
-using BookStoreApp.Blazor.Server.UI.Configurations;
-using BookStoreApp.Blazor.Server.UI.Providers;
-using BookStoreApp.Blazor.Server.UI.Services;
-using BookStoreApp.Blazor.Server.UI.Services.Authentication;
-using BookStoreApp.Blazor.Server.UI.Services.Base;
+using BookStoreApp.Blazor.Shared.UI.Configurations;
+using BookStoreApp.Blazor.Shared.UI.Providers;
+using BookStoreApp.Blazor.Shared.UI.Services;
+using BookStoreApp.Blazor.Shared.UI.Services.Authentication;
+using BookStoreApp.Blazor.Shared.UI.Services.Base;
 using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -1,0 +1,53 @@
+﻿@page "/authors/create/"
+@inject IAuthorService authorService
+@inject NavigationManager navManager
+@attribute [Authorize(Roles = Roles.Administrator)]
+
+<h3>Create New Author</h3>
+
+<EditForm Model="Author" OnValidSubmit="HandleCreateAuthor">
+        <DataAnnotationsValidator/>
+        <ValidationSummary/>
+        <div class="form-group">
+            <label for="email">First Name</label>
+            <InputText class="form-control" @bind-Value="Author.FirstName" id="firstname"/>
+            <ValidationMessage For="@(() => Author.FirstName)" />
+        </div>
+        <br/>
+        <div class="form-group">
+            <label for="email">Last Name</label>
+            <InputText class="form-control" @bind-Value="Author.LastName" id="lastname"/>
+            <ValidationMessage For="@(() => Author.LastName)" />
+        </div>
+        <br/>
+        <div class="form-group">
+            <label for="bio">Biography</label>
+            <InputText class="form-control" @bind-Value="Author.Bio" id="bio"/>
+            <ValidationMessage For="@(() => Author.Bio)" />
+        </div>
+        <br/>
+        <button type="submit" class="btn btn-primary">
+            <span class="oi oi-pencil"></span>Save
+        </button>
+        <button @onclick="BackToList" type="button" class="btn btn-outline-secondary">
+            <span class="oi oi-media-skip-backward"></span>Back To List
+        </button>
+
+</EditForm>
+
+@code {
+    private AuthorCreateDto Author = new AuthorCreateDto();
+    private async Task HandleCreateAuthor()
+    {
+        var response = await authorService.Create(Author);
+        if (response.Success)
+        {
+            BackToList();
+        }
+    }
+
+    private void BackToList()
+    {
+        navManager.NavigateTo("/authors/");
+    }
+}
