@@ -1,0 +1,168 @@
+﻿@using BookStoreApp.Blazor.Shared.UI.Services.Base
+@using BookStoreApp.Blazor.Shared.UI.Services.Authentication
+@using BookStoreApp.Blazor.Shared.UI.Services
+@using BookStoreApp.Blazor.Shared.UI.Statics
+@using BookStoreApp.Blazor.Shared.UI.Components
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@inject IBookService bookService
+@inject IAuthorService authorService
+@inject NavigationManager navManager
+@attribute [Authorize(Roles = Roles.Administrator)]
+
+<div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">Book Form</h4>
+			</div>
+			<div class="modal-body">
+				<EditForm Model="Book" OnValidSubmit="ModalSave">
+                    <DataAnnotationsValidator/>
+                    <ValidationSummary/>
+                    <div class="form-group">
+                        <label for="title">Book Title</label>
+                        <InputText class="form-control" @bind-Value="Book.Title" id="title"/>
+                        <ValidationMessage For="@(() => Book.Title)"/>
+                    </div>
+                    <br/>
+                    <div class="form-group">
+                        <label for="isbn">ISBN</label>
+                        <InputText class="form-control" @bind-Value="Book.Isbn" id="isbn"/>
+                        <ValidationMessage For="@(() => Book.Isbn)"/>
+                    </div>
+                    <br/>
+                    <div class="form-group">
+                        <label for="year">Year</label>
+                        <InputNumber class="form-control" @bind-Value="Book.Year" id="year"/>
+                        <ValidationMessage For="@(() => Book.Year)"/>
+                    </div>
+                    <br/>
+                    <div class="form-group">
+                        <label for="price">Price</label>
+                        <InputNumber class="form-control" @bind-Value="Book.Price" id="price"/>
+                        <ValidationMessage For="@(() => Book.Price)"/>
+                    </div>
+                    <br/>
+                    <div class="form-group">
+                        <label for="summary">Summary</label>
+                        <InputText class="form-control" @bind-Value="Book.Summary" id="summary"/>
+                        <ValidationMessage For="@(() => Book.Summary)"/>
+                    </div>
+                    <br/>
+                    <div class="form-group">
+                        <label for="author">Author</label>
+                        <InputSelect class="form-select" @bind-Value="Book.AuthorId" id="authorid">
+                            <option value="">-- Select Author --</option>
+                            @foreach(var author in Authors)
+                            {
+                                <option value="@author.Id">@author.FirstName @author.LastName</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => Book.AuthorId)"/>
+                    </div>
+                    <br/>
+                    <div class="form-group">
+                        <label>Book Cover Photo</label>
+                        <InputFile OnChange="HandleFileSelection"/>
+                        <img src="@img" width="100" height="100" class="img-thumbnail" />
+                        <p class="text-danger">@UploadFileWarning</p>
+                    </div>
+                </EditForm>
+			</div>
+			<div class="modal-footer">
+                <button class="btn btn-primary" onclick=@(() => ModalCancel())> 
+                    Cancel
+                </button>
+                <button class="btn btn-primary" onclick=@(() => ModalSave())> 
+                    Save
+                </button>
+			</div>
+		</div>
+	</div>
+</div>
+
+@code {
+
+    [Parameter] public BookReadOnlyDto? SelectedBookReadOnly { get; set; }
+    [Parameter] public BookUpdateDto Book { get; set; }
+    [Parameter] public EventCallback<bool> OnClose { get; set; }
+    private List<AuthorReadOnlyDto> Authors = new();
+    private string img = string.Empty;
+    private string UploadFileWarning = string.Empty;
+    private long maxFileSize = 1024 * 1024 * 5;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Book != null)
+        {
+            img = Book.Image;
+        }
+
+        bookService.BookUpdated += (s,e) =>
+        {
+            if (Book?.Id == e.Id)
+            {
+                Book.Title = e.Title;
+                Book.AuthorId = e.AuthorId;
+                Book.Image = e.Image;
+                Book.Price = e.Price;
+                Book.Summary = e.Summary;
+                Book.Isbn = e.Isbn;
+                Book.Year = e.Year;
+                StateHasChanged();
+            }
+        };
+
+        var authorResponse = await authorService.Get();
+        if (authorResponse.Success)
+        {
+            Authors = authorResponse.Data;
+        }
+    }
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+
+    private async Task ModalSave()
+    {
+        var response = await bookService.Update(Book.Id, Book);
+        if (response.Success)
+        {
+            await OnClose.InvokeAsync(true);
+        }
+	}
+
+    private async Task HandleFileSelection(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            if(file.Size > maxFileSize)
+            {
+                UploadFileWarning = "This file is too big for upload.";
+                return;
+            }
+
+            var ext = System.IO.Path.GetExtension(file.Name);
+            if((ext.ToLower().Contains("jpg") || ext.ToLower().Contains("png") || ext.ToLower().Contains("jpeg")) == false)
+            {
+                UploadFileWarning = "Please select a valid image file (*.jpg | *.png)";
+                return;
+            }
+
+            var byteArray = new byte[file.Size];
+            await file.OpenReadStream().ReadAsync(byteArray);
+            string imageType = file.ContentType;
+            string base64String = Convert.ToBase64String(byteArray);
+
+            Book.ImageData = base64String;
+            Book.OriginalImageName = file.Name;
+            img = $"data:{imageType}; base64, {base64String}";
+
+        }
+    }
+}

@@ -11,5 +11,8 @@ namespace BookStoreApp.Blazor.Shared.UI.Services
         Task<Response<int>> Create(BookCreateDto author);
         Task<Response<int>> Update(int id, BookUpdateDto author);
         Task<Response<int>> Delete(int id);
+        event EventHandler<BookCreateDto> BookAdded;
+        event EventHandler<BookUpdateDto> BookUpdated;
+        event EventHandler<int> BookDeleted;
     }
 }

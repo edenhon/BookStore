@@ -1,4 +1,5 @@
 using BookStoreApp.API.Configurations;
+using BookStoreApp.API.Controllers;
 using BookStoreApp.API.Data;
 using BookStoreApp.API.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -22,7 +23,7 @@ builder.Services.AddScoped<IAuthorsRepository, AuthorsRepository>();
 builder.Services.AddScoped<IBooksRepository, BooksRepository>();
 
 builder.Services.AddAutoMapper(typeof(MapperConfig));
-
+builder.Services.AddSignalR();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -73,7 +74,7 @@ app.UseCors(corsPolicyName);
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.MapHub<BookHub>("/hubs/books");
 app.MapControllers();
 
 app.Run();

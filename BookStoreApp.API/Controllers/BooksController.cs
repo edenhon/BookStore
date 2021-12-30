@@ -13,6 +13,7 @@ using AutoMapper.QueryableExtensions;
 using BookStoreApp.API.Static;
 using Microsoft.AspNetCore.Authorization;
 using BookStoreApp.API.Repositories;
+using Microsoft.AspNetCore.SignalR;
 
 namespace BookStoreApp.API.Controllers
 {
@@ -25,13 +26,14 @@ namespace BookStoreApp.API.Controllers
         private readonly IMapper mapper;
         private readonly ILogger<BooksController> logger;
         private readonly IWebHostEnvironment webHostEnvironment;
-
-        public BooksController(IBooksRepository booksRepository, IMapper mapper, ILogger<BooksController> logger, IWebHostEnvironment webHostEnvironment)
+        private readonly IHubContext<BookHub> hubContext;
+        public BooksController(IBooksRepository booksRepository, IMapper mapper, ILogger<BooksController> logger, IWebHostEnvironment webHostEnvironment, IHubContext<BookHub> hubContext)
         {
             this.booksRepository = booksRepository;
             this.mapper = mapper;
             this.logger = logger;
             this.webHostEnvironment = webHostEnvironment;
+            this.hubContext = hubContext;
         }
 
         // GET: api/Books
@@ -115,6 +117,7 @@ namespace BookStoreApp.API.Controllers
             try
             {
                 await booksRepository.UpdateAsync(book);
+                await hubContext.Clients.All.SendAsync(nameof(PutBook), bookDto);
             }
             catch (DbUpdateConcurrencyException ex)
             {

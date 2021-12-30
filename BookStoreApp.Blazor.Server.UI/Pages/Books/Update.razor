@@ -87,6 +87,21 @@
             img = Book.Image;
         }
 
+        bookService.BookUpdated += (s,e) =>
+        {
+            if (Book?.Id == e.Id)
+            {
+                Book.Title = e.Title;
+                Book.AuthorId = e.AuthorId;
+                Book.Image = e.Image;
+                Book.Price = e.Price;
+                Book.Summary = e.Summary;
+                Book.Isbn = e.Isbn;
+                Book.Year = e.Year;
+                StateHasChanged();
+            }
+        };
+
         var authorResponse = await authorService.Get();
         if (authorResponse.Success)
         {

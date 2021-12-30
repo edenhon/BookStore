@@ -1,0 +1,151 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.JSInterop
+@using BookStoreApp.Blazor.Shared.UI.Services.Base
+@using BookStoreApp.Blazor.Shared.UI.Services
+@using BookStoreApp.Blazor.Shared.UI.Models
+@inject IBookService bookService
+@inject IJSRuntime js
+
+<h3>Books</h3>
+
+@if(response.Success == false)
+{
+    <div class="alert alert-danger">
+        <h4>@response.Message</h4>
+    </div>
+}
+else
+{
+    @if(Books == null)
+    {
+        <div class="alert alert-info">
+            <h4>Loading data...</h4>
+        </div>
+    }
+    else
+    {
+        <AuthorizeView Roles="Administrator">
+            <a class="btn btn-dark" href="/books/create"><span class="oi oi-plus" aria-hidden="true"></span>Create</a>
+        </AuthorizeView>
+        <br/>
+        <table class="table table-responsive">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Title</th>
+                    <th>Price</th>
+                    <th>Author Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var book in Books)
+                {
+                    <tr>
+                       <td>
+                           <img src="@book.Image" width="100" height = "100" alt="@book.Title">
+                        </td>
+                        <td>@book.Title</td>
+                        <td>@book.Price.ToString("C")</td>
+                        <td>
+                            <a class="btn btn-link" href="/authors/details/@book.AuthorId"> 
+                                @book.AuthorName
+                            </a>
+                        </td>
+                        <td>
+                            <a class="btn btn-primary" href="/books/details/@book.Id"> 
+                                <span class="oi oi-book" aria-hidden="true"/> Details
+                            </a>
+                            <AuthorizeView Roles="Administrator">
+                                <a class="btn btn-warning" href="/books/update/@book.Id"> 
+                                    <span class="oi oi-pencil" aria-hidden="true"/> Edit(Page)
+                                </a>
+                                <button class="btn btn-primary" onclick=@(() => OpenBookUpdateDialog(@book))> 
+                                    <span class="oi oi-pencel" aria-hidden="true"/>
+                                    Edit(ModalDialog)
+                                </button>
+                                <button class="btn btn-primary" onclick=@(() => Delete(@book.Id))> 
+                                    <span class="oi oi-delete" aria-hidden="true"/>
+                                    Delete
+                                </button>
+                            </AuthorizeView>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }    
+}
+@if (isBookUpdateDialogOpen)
+{
+    <BookForm SelectedBookReadOnly="SelectedReadOnlyBook" Book="SelectedUpdateBook" OnClose="@OnBookUpdateDialogClose">
+    </BookForm>
+}
+
+@code {
+
+    private BookReadOnlyDto SelectedReadOnlyBook { get; set; }
+    private BookUpdateDto SelectedUpdateBook { get; set; }
+    private List<BookReadOnlyDto> Books;
+    private Response<List<BookReadOnlyDto>> response = new Response<List<BookReadOnlyDto>>{Success = true};
+    private bool isBookUpdateDialogOpen;
+
+    protected override async Task OnInitializedAsync()
+    {
+        SelectedReadOnlyBook = new();
+        response = await bookService.Get();
+        if (response.Success)
+        {
+            Books = response.Data;
+        }
+        bookService.BookUpdated += (s,e) =>
+        {
+            var abook = Books.FirstOrDefault<BookReadOnlyDto>(q => q.Id == e.Id);
+            if (abook != null)
+            {
+                abook.Title = e.Title;
+                abook.AuthorId = e.AuthorId;
+                abook.Image = e.Image;
+                abook.Price = e.Price;
+                StateHasChanged();
+            }
+        };
+    }
+
+    private async Task Delete(int bookId)
+    {
+        var book = Books.First(q => q.Id == bookId);
+
+        var confirm = await js.InvokeAsync<bool>("confirm", $"Please confirm to delete {book.Title}?");
+        if (confirm)
+        {
+            var response = await bookService.Delete(bookId);
+
+            if (response.Success)
+            {
+                await OnInitializedAsync();
+            }
+        }
+    }
+
+    private async Task OpenBookUpdateDialog(BookReadOnlyDto book)
+    {
+        SelectedReadOnlyBook = book;
+        var bookResponse = await bookService.GetForUpdate(book.Id);
+        if (bookResponse.Success)
+        {
+            SelectedUpdateBook = bookResponse.Data;
+        } else
+        {
+            SelectedUpdateBook = new();
+        }
+
+        isBookUpdateDialogOpen = true;
+        StateHasChanged();
+    }
+    private void OnBookUpdateDialogClose(bool accepted)
+    {
+        isBookUpdateDialogOpen = false;
+        StateHasChanged();
+    }
+}

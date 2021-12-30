@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Blazored.LocalStorage;
 using BookStoreApp.Blazor.Shared.UI.Services.Base;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace BookStoreApp.Blazor.Shared.UI.Services
 {
@@ -8,11 +9,89 @@ namespace BookStoreApp.Blazor.Shared.UI.Services
     {
         private readonly IClient client;
         private readonly IMapper mapper;
+        private HubConnection hubConnection;
+        private readonly string hubUrl = "/hubs/books";
+        private readonly string baseUrl = "https://localhost:7183";
+        public EventHandler<BookCreateDto> BookAdded;
+        public EventHandler<BookUpdateDto> BookUpdated;
+        public EventHandler<int> BookDeleted;
 
         public BookService(IClient client, ILocalStorageService localStorage, IMapper mapper) : base(client, localStorage)
         {
             this.client = client;
             this.mapper = mapper;
+            InitSignalR();
+        }
+
+        event EventHandler<BookCreateDto> IBookService.BookAdded
+        {
+            add
+            {
+                throw new NotImplementedException();
+            }
+
+            remove
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        event EventHandler<BookUpdateDto> IBookService.BookUpdated
+        {
+            add
+            {
+                BookUpdated += value;
+            }
+
+            remove
+            {
+                if (BookUpdated != null)
+                {
+                    BookUpdated -= value;
+                }
+            }
+        }
+
+        event EventHandler<int> IBookService.BookDeleted
+        {
+            add
+            {
+                throw new NotImplementedException();
+            }
+
+            remove
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        private void InitSignalR()
+        {
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl($"{baseUrl}{hubUrl}")
+                .Build();
+
+            hubConnection.On<BookCreateDto>("PostBook", (dto) =>
+            {
+                //BookAdded?.Invoke(this, dto);
+            });
+
+            hubConnection.On<BookUpdateDto>("PutBook", (dto) =>
+            {
+                BookUpdated?.Invoke(this, dto);
+            });
+
+            hubConnection.On<int>("DeleteBook", (id) =>
+            {
+                //BookDeleted?.Invoke(this, id);
+            });
+
+            hubConnection.StartAsync();
+
+            hubConnection.Closed += async (s) => 
+            {
+                await hubConnection.StartAsync();
+            };
         }
 
         public async Task<Response<int>> Create(BookCreateDto bookCreateDto)
