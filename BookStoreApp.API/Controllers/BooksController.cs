@@ -150,7 +150,8 @@ namespace BookStoreApp.API.Controllers
                 }
 
                 await booksRepository.AddAsync(book);
-
+                var BookReadOnly = mapper.Map<BookReadOnlyDto>(book);
+                await hubContext.Clients.All.SendAsync(nameof(PostBook), BookReadOnly);
                 return CreatedAtAction(nameof(GetBook), new { id = book.Id }, book);
             }
             catch (Exception ex)
@@ -185,7 +186,7 @@ namespace BookStoreApp.API.Controllers
                 }
 
                 await booksRepository.DeleteAsync(id);
-
+                await hubContext.Clients.All.SendAsync(nameof(DeleteBook), id);
                 return NoContent();
             }
             catch (Exception ex)

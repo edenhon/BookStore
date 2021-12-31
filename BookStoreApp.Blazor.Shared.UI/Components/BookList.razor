@@ -98,18 +98,54 @@ else
         {
             Books = response.Data;
         }
-        bookService.BookUpdated += (s,e) =>
+        //bookService.BookUpdated += (s,e) =>
+        //{
+        //    var abook = Books.FirstOrDefault<BookReadOnlyDto>(q => q.Id == e.Id);
+        //    if (abook != null)
+        //    {
+        //        abook.Title = e.Title;
+        //        abook.AuthorId = e.AuthorId;
+        //        abook.Image = e.Image;
+        //        abook.Price = e.Price;
+        //        StateHasChanged();
+        //    }
+
+        bookService.BookAdded += (s,e) => BookAddedEventHandler(s,e);
+        bookService.BookUpdated += (s,e) => BookUpdatedEventHandler(s,e);
+        bookService.BookDeleted += (s,e) => BookDeletedEventHandler(s,e);
+    }
+
+    private void BookAddedEventHandler(object? sender, BookReadOnlyDto e)
+    {
+        var abook = Books.FirstOrDefault<BookReadOnlyDto>(q => q.Id == e.Id);
+        if (abook == null)
         {
-            var abook = Books.FirstOrDefault<BookReadOnlyDto>(q => q.Id == e.Id);
-            if (abook != null)
-            {
-                abook.Title = e.Title;
-                abook.AuthorId = e.AuthorId;
-                abook.Image = e.Image;
-                abook.Price = e.Price;
-                StateHasChanged();
-            }
-        };
+            Books.Add(e);
+            StateHasChanged();
+        }
+    }
+
+    private void BookUpdatedEventHandler(object? sender, BookUpdateDto e)
+    {
+        var abook = Books.FirstOrDefault<BookReadOnlyDto>(q => q.Id == e.Id);
+        if (abook != null)
+        {
+            abook.Title = e.Title;
+            abook.AuthorId = e.AuthorId;
+            abook.Image = e.Image;
+            abook.Price = e.Price;
+            StateHasChanged();
+        }
+    }
+
+    private void BookDeletedEventHandler(object? sender, int e)
+    {
+        var abook = Books.FirstOrDefault<BookReadOnlyDto>(q => q.Id == e);
+        if (abook != null)
+        {
+            Books.Remove(abook);
+            StateHasChanged();
+        }
     }
 
     private async Task Delete(int bookId)

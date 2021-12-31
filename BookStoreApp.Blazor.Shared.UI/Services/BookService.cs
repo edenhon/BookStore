@@ -12,7 +12,7 @@ namespace BookStoreApp.Blazor.Shared.UI.Services
         private HubConnection hubConnection;
         private readonly string hubUrl = "/hubs/books";
         private readonly string baseUrl = "https://localhost:7183";
-        public EventHandler<BookCreateDto> BookAdded;
+        public EventHandler<BookReadOnlyDto> BookAdded;
         public EventHandler<BookUpdateDto> BookUpdated;
         public EventHandler<int> BookDeleted;
 
@@ -23,16 +23,19 @@ namespace BookStoreApp.Blazor.Shared.UI.Services
             InitSignalR();
         }
 
-        event EventHandler<BookCreateDto> IBookService.BookAdded
+        event EventHandler<BookReadOnlyDto> IBookService.BookAdded
         {
             add
             {
-                throw new NotImplementedException();
+                BookAdded += value;
             }
 
             remove
             {
-                throw new NotImplementedException();
+                if (BookAdded != null)
+                {
+                    BookAdded -= value;
+                }
             }
         }
 
@@ -56,12 +59,15 @@ namespace BookStoreApp.Blazor.Shared.UI.Services
         {
             add
             {
-                throw new NotImplementedException();
+                BookDeleted += value;
             }
 
             remove
             {
-                throw new NotImplementedException();
+                if (BookDeleted != null)
+                {
+                    BookDeleted -= value;
+                }
             }
         }
 
@@ -71,9 +77,9 @@ namespace BookStoreApp.Blazor.Shared.UI.Services
                 .WithUrl($"{baseUrl}{hubUrl}")
                 .Build();
 
-            hubConnection.On<BookCreateDto>("PostBook", (dto) =>
+            hubConnection.On<BookReadOnlyDto>("PostBook", (dto) =>
             {
-                //BookAdded?.Invoke(this, dto);
+                BookAdded?.Invoke(this, dto);
             });
 
             hubConnection.On<BookUpdateDto>("PutBook", (dto) =>
@@ -83,7 +89,7 @@ namespace BookStoreApp.Blazor.Shared.UI.Services
 
             hubConnection.On<int>("DeleteBook", (id) =>
             {
-                //BookDeleted?.Invoke(this, id);
+                BookDeleted?.Invoke(this, id);
             });
 
             hubConnection.StartAsync();
