@@ -2,6 +2,7 @@
 using Blazored.LocalStorage;
 using BookStoreApp.Blazor.Shared.UI.Services.Base;
 using Microsoft.AspNetCore.SignalR.Client;
+using System.Diagnostics;
 
 namespace BookStoreApp.Blazor.Shared.UI.Services
 {
@@ -71,10 +72,16 @@ namespace BookStoreApp.Blazor.Shared.UI.Services
             }
         }
 
-        private void InitSignalR()
+        private async void InitSignalR()
         {
+            await GetBearerToken();
+            if (client.HttpClient.DefaultRequestHeaders.Authorization == null) return;
+
             hubConnection = new HubConnectionBuilder()
-                .WithUrl($"{baseUrl}{hubUrl}")
+                .WithUrl($"{baseUrl}{hubUrl}", options => 
+                    options.AccessTokenProvider = () => 
+                    Task.FromResult(client.HttpClient.DefaultRequestHeaders.Authorization?.Parameter))
+                .WithAutomaticReconnect()
                 .Build();
 
             hubConnection.On<BookReadOnlyDto>("PostBook", (dto) =>
@@ -92,9 +99,14 @@ namespace BookStoreApp.Blazor.Shared.UI.Services
                 BookDeleted?.Invoke(this, id);
             });
 
-            hubConnection.StartAsync();
+            hubConnection.Reconnecting += async (exception) =>
+            {
+                Debug.WriteLine($"Connection started reconnecting due to an error: {exception}");
+            };
 
-            hubConnection.Closed += async (s) => 
+            await hubConnection.StartAsync();
+
+            hubConnection.Closed += async (s) =>
             {
                 await hubConnection.StartAsync();
             };
