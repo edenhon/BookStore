@@ -75,7 +75,7 @@ namespace BookStoreApp.Blazor.Shared.UI.Services
         private async void InitSignalR()
         {
             await GetBearerToken();
-            if (client.HttpClient.DefaultRequestHeaders.Authorization == null) return;
+            if (client.HttpClient?.DefaultRequestHeaders.Authorization == null) return;
 
             hubConnection = new HubConnectionBuilder()
                 .WithUrl($"{baseUrl}{hubUrl}", options => 
