@@ -27,6 +27,7 @@ namespace BookStoreApp.API.Repositories
         public async Task DeleteAsync(int id)
         {
             var entity = await GetAsync(id);
+            if (entity == null) return;
             context.Set<T>().Remove(entity);
             await context.SaveChangesAsync();
         }

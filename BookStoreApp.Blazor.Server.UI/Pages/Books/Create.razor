@@ -1,4 +1,7 @@
 ﻿@page "/books/create/"
+@using Syncfusion.Blazor.Data
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Inputs
 @inject IBookService bookService
 @inject IAuthorService authorService
 @inject NavigationManager navManager
@@ -6,43 +9,29 @@
 
 <h3>Create New Book</h3>
 
-<EditForm Model="Book" OnValidSubmit="HandleCreateBook">
+<EditForm Model="Book" OnValidSubmit="HandleCreateBook">    
     <DataAnnotationsValidator/>
     <ValidationSummary/>
-    <div class="form-group">
-        <label for="title">Book Title</label>
-        <InputText class="form-control" @bind-Value="Book.Title" id="title"/>
-    </div>
-    <br/>
-    <div class="form-group">
-        <label for="isbn">ISBN</label>
-        <InputText class="form-control" @bind-Value="Book.Isbn" id="isbn"/>
-    </div>
-    <br/>
-    <div class="form-group">
-        <label for="year">Year</label>
-        <InputNumber class="form-control" @bind-Value="Book.Year" id="year"/>
-    </div>
-    <br/>
-    <div class="form-group">
-        <label for="price">Price</label>
-        <InputNumber class="form-control" @bind-Value="Book.Price" id="price"/>
-    </div>
-    <br/>
-    <div class="form-group">
-        <label for="summary">Summary</label>
-        <InputText class="form-control" @bind-Value="Book.Summary" id="summary"/>
-    </div>
-    <br/>
-    <div class="form-group">
-        <label for="author">Author</label>
-        <InputSelect class="form-select" @bind-Value="Book.AuthorId" id="authorid">
-            <option value="">-- Select Author --</option>
-            @foreach(var author in Authors)
-            {
-                <option value="@author.Id">@author.FirstName @author.LastName</option>
-            }
-        </InputSelect>
+    <div class="col-sm-6 control-section">
+        <div class="content-wrapper">
+            <SfTextBox FloatLabelType="@FloatLabelType.Auto" Placeholder="Title" @bind-Value="Book.Title" id="title"/>
+            <SfTextBox FloatLabelType="@FloatLabelType.Auto" Placeholder="ISBN" @bind-Value="Book.Isbn" id="isbn"/>
+            <SfNumericTextBox FloatLabelType="@FloatLabelType.Auto" Placeholder="Year" TValue="int" Step="1" Format="n0" @bind-Value="Book.Year"/>
+            <SfNumericTextBox FloatLabelType="@FloatLabelType.Auto" Placeholder="Price" TValue="double" Step="0.5" Format="c2" @bind-Value="Book.Price"/>
+            <SfTextBox FloatLabelType="@FloatLabelType.Auto" Placeholder="Summary" @bind-Value="Book.Summary" id="summary"/>
+            <br />
+            <SfDropDownList TItem="AuthorReadOnlyDto" TValue="int" PopupHeight="230px" Placeholder="Select Author" @bind-Value="Book.AuthorId" DataSource="@Authors">
+                <DropDownListTemplates TItem="AuthorReadOnlyDto">
+                    <ItemTemplate Context="AuthorContext1">
+                        <span>@(AuthorContext1.FirstName) @(AuthorContext1.LastName)</span>
+                    </ItemTemplate>
+                    <ValueTemplate Context="AuthorContext2"> 
+                        <span>@(AuthorContext2.FirstName) @(AuthorContext2.LastName)</span>
+                    </ValueTemplate> 
+                </DropDownListTemplates>
+                <DropDownListFieldSettings Value="Id"/>
+            </SfDropDownList>
+        </div>
     </div>
     <br/>
     <div class="form-group">
@@ -120,3 +109,15 @@
         navManager.NavigateTo("/books/");
     }
 }
+
+<style>
+    .content-wrapper {
+        width: 35%;
+        margin: 0 auto;
+        min-width: 185px;
+    }
+    .control-label {
+        padding: 24px 0px 10px 0px;
+        font-size: 12px;
+    }
+</style>

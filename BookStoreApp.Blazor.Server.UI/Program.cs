@@ -5,12 +5,14 @@ using BookStoreApp.Blazor.Shared.UI.Services;
 using BookStoreApp.Blazor.Shared.UI.Services.Authentication;
 using BookStoreApp.Blazor.Shared.UI.Services.Base;
 using Microsoft.AspNetCore.Components.Authorization;
+using Syncfusion.Blazor;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddSyncfusionBlazor();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddHttpClient<IClient, Client>(cl => cl.BaseAddress = new Uri("https://localhost:7183"));
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
@@ -20,7 +22,8 @@ builder.Services.AddAutoMapper(typeof(MapperConfig));
 builder.Services.AddScoped<ApiAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(p => p.GetRequiredService<ApiAuthenticationStateProvider>());
 var app = builder.Build();
-
+var sfKey = builder.Configuration.GetValue<string>("Syncfusion:LicenseKey");
+Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(sfKey);
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {

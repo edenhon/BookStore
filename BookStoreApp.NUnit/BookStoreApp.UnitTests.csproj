@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BookStoreApp.API\BookStoreApp.API.csproj" />
     <ProjectReference Include="..\BookStoreApp.Blazor.Shared.UI\BookStoreApp.Blazor.Shared.UI.csproj" />
   </ItemGroup>
 

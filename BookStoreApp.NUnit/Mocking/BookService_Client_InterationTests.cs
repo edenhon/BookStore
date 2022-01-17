@@ -4,10 +4,6 @@ using NUnit.Framework;
 using BookStoreApp.Blazor.Shared.UI.Services.Base;
 using AutoMapper;
 using BookStoreApp.Blazor.Shared.UI.Services;
-using BookStoreApp.Blazor.Shared.UI.Services.Authentication;
-using System.Net.Http;
-using System;
-using System.Threading.Tasks;
 
 namespace BookStoreApp.UnitTests.Mocking
 {
@@ -25,7 +21,6 @@ namespace BookStoreApp.UnitTests.Mocking
         [SetUp]
         public void Setup()
         {
-
             client = new Mock<IClient>();
             localStorage = new Mock<ILocalStorageService>();
             mapper = new Mock<IMapper>();
@@ -39,6 +34,7 @@ namespace BookStoreApp.UnitTests.Mocking
             bookService.Create(newBook);
             client.Verify(c => c.BooksPOSTAsync(newBook));
         }
+
         [Test]
         public void Update_WhenCalled_DoesBooksPUTAsync()
         {
