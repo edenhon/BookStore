@@ -4,6 +4,31 @@
     flex-direction: column;
 }
 
+.topnav {
+    height: 3.5rem;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.navbar-toggler {
+    background-color: #05163C;
+}
+
+.navbar-brand {
+    font-size: 1.1rem;
+    margin-right: 24px;
+}
+
+@media (min-width: 641px) {
+    .navbar-toggler {
+        display: block;
+    }
+
+    .collapse {
+        /* Never collapse the sidebar for wide screens */
+        display: block;
+    }
+}
+
 main {
     flex: 1;
 }
@@ -64,7 +89,7 @@ main {
     }
 
     .top-row, article {
-        padding-left: 2rem !important;
+        padding-left: 1rem !important;
         padding-right: 1.5rem !important;
     }
 }

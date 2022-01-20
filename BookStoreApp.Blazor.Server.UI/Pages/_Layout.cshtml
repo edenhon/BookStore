@@ -12,6 +12,9 @@
     <link href="css/site.css" rel="stylesheet" />
     <link href="BookStoreApp.Blazor.Server.UI.styles.css" rel="stylesheet" />
     <link href="_content/Syncfusion.Blazor/styles/bootstrap5.css" rel="stylesheet" />
+    <link href="_content/Syncfusion.Blazor.Themes/bootstrap5.css" rel="stylesheet" />
+    <link href="css/syncfusion-blazor-icons.css" rel="stylesheet" />
+
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
 <body>
@@ -29,5 +32,11 @@
     </div>
 
     <script src="_framework/blazor.server.js"></script>
+	 <script>
+        function isSidebar(x, y) {
+            var sidebarEle = document.elementFromPoint(x, y);
+            return (sidebarEle && sidebarEle.closest('.sidebar') != null) ? true : false;
+        }
+    </script>
 </body>
 </html>

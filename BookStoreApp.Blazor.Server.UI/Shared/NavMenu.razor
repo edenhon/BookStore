@@ -1,66 +1,84 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Blazor Server UI</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+﻿<div>
+    <ul class="nav flex-column">
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> <span class="displayText">Home</span>
+            </NavLink>
+        </li>
+    </ul>
+    <div class="separator"></div>
+    <div class="scroller">
+        <ul class="nav flex-column">
+            <AuthorizeView>
+                <Authorized>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link">
+                            <span class="oi oi-person" aria-hidden="true"></span><span class="displayText">@context.User?.Identity?.Name</span> 
+                        </NavLink>
+                    </div>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="users/logout">
+                            <span class="oi oi-arrow-circle-left" aria-hidden="true"></span><span class="displayText">Log Out</span>
+                        </NavLink>
+                    </div>
+                    <hr/>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="authors/">
+                            <span class="oi oi-people" aria-hidden="true"></span><span class="displayText">Authors</span>
+                        </NavLink>
+                    </div>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="books/">
+                            <span class="oi oi-book" aria-hidden="true"></span><span class="displayText">Books</span>
+                        </NavLink>
+                    </div>
+                </Authorized>
+                <NotAuthorized>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="users/register">
+                            <span class="oi oi-badge" aria-hidden="true"></span><span class="displayText">Register</span> 
+                        </NavLink>
+                    </div>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="users/login">
+                            <span class="oi oi-account-login" aria-hidden="true"></span><span class="displayText">Login</span> 
+                        </NavLink>
+                    </div>
+                </NotAuthorized>
+            </AuthorizeView>
+        </ul>
     </div>
 </div>
 
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <AuthorizeView>
-            <Authorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link">
-                        <span class="oi oi-person" aria-hidden="true"></span> @context.User?.Identity?.Name
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="users/logout">
-                        <span class="oi oi-arrow-circle-left" aria-hidden="true"></span> Log Out
-                    </NavLink>
-                </div>
-                <hr/>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="authors/">
-                        <span class="oi oi-plus" aria-hidden="true"></span> Authors
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="books/">
-                        <span class="oi oi-plus" aria-hidden="true"></span> Books
-                    </NavLink>
-                </div>
-            </Authorized>
-            <NotAuthorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="users/register">
-                        <span class="oi oi-plus" aria-hidden="true"></span> Register
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="users/login">
-                        <span class="oi oi-plus" aria-hidden="true"></span> Login
-                    </NavLink>
-                </div>
-            </NotAuthorized>
-        </AuthorizeView>
-    </nav>
-</div>
 
-@code {
-    private bool collapseNavMenu = true;
+<style>
+ .scroller {
+         height: calc(100vh - 160px) !important;
+         overflow-y: auto;
+         width: 287px;
+     }
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+         .scroller::-webkit-scrollbar, scrollbar-thumb
+         .scroller::-webkit-scrollbar-thumb {
+             width: 8px;
+             height: 110px;
+             border-radius: 4px;
+             position: center;
+         }
 
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
-}
+         .scroller::-webkit-scrollbar-thumb {
+             box-shadow: inset 0 0 0 10px #313C75;
+             border-radius: 4px;
+         }
+
+         .scroller::-webkit-scrollbar-track {
+             width: 28px;
+         }
+     .separator {
+         border: 1px solid #FFFFFF;
+         opacity: 0.14;
+         width: 247px;
+         margin: 1rem;
+         margin-top: 0px;
+     }
+</style>
