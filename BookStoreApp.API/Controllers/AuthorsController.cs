@@ -92,7 +92,7 @@ namespace BookStoreApp.API.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> PutAuthor(int id, AuthorUpdateDto authorDto)
+        public async Task<IActionResult> PutAuthor(int id, [FromBody] AuthorUpdateDto authorDto)
         {
             try
             {
