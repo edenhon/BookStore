@@ -81,7 +81,7 @@ namespace BookStoreApp.API.Controllers
 
                 var response = new AuthResponse
                 {
-                    Email = userDto.Email,
+                    Email = userDto.Email,  
                     Token = tokenString,
                     UserId = user.Id,
                 };

@@ -107,7 +107,7 @@ else
         //        abook.AuthorId = e.AuthorId;
         //        abook.Image = e.Image;
         //        abook.Price = e.Price;
-        //        StateHasChanged();
+        //        InvokeAsync(() => StateHasChanged());
         //    }
 
         bookService.BookAdded += (s,e) => BookAddedEventHandler(s,e);
@@ -121,7 +121,7 @@ else
         if (abook == null)
         {
             Books.Add(e);
-            StateHasChanged();
+            InvokeAsync(() => StateHasChanged());
         }
     }
 
@@ -134,7 +134,7 @@ else
             abook.AuthorId = e.AuthorId;
             abook.Image = e.Image;
             abook.Price = e.Price;
-            StateHasChanged();
+            InvokeAsync(() => StateHasChanged());
         }
     }
 
@@ -144,7 +144,7 @@ else
         if (abook != null)
         {
             Books.Remove(abook);
-            StateHasChanged();
+            InvokeAsync(() => StateHasChanged());
         }
     }
 
@@ -177,11 +177,11 @@ else
         }
 
         isBookUpdateDialogOpen = true;
-        StateHasChanged();
+        InvokeAsync(() => StateHasChanged());
     }
     private void OnBookUpdateDialogClose(bool accepted)
     {
         isBookUpdateDialogOpen = false;
-        StateHasChanged();
+        InvokeAsync(() => StateHasChanged());
     }
 }

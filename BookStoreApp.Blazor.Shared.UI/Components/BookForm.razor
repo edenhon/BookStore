@@ -111,7 +111,7 @@
                 Book.Summary = e.Summary;
                 Book.Isbn = e.Isbn;
                 Book.Year = e.Year;
-                StateHasChanged();
+                InvokeAsync(() => StateHasChanged());
             }
         };
 
