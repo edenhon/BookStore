@@ -8,3 +8,4 @@ This Book Store application was developed using the following tech stack, demons
 7. Client apps are tightly coupled with backend web API layer using NSwagStudio.
 8. SignalR communication in realtime.
 9. Pagination technique using virtualization pattern.
+10. Generic Repository pattern.
